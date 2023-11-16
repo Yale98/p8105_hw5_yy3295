@@ -107,8 +107,36 @@ This figure suggests a very wide range in the rate at which homicides are solved
 
 ```
 
+
+## Problem 3
+
+First set the following design elements.
+```{r}
+set.seed(1)
+n <- 30
+sigma <- 5
+alpha <- 0.05
+mus <- c(1, 2, 3, 4, 5, 6, 0)
+```
+
+Simulation: Mean and SD 
+```{r}
+sim_mean_sd = function(n, mu, sigma) {
+  
+  sim_data = tibble(
+    x = rnorm(n, mean = mu, sd = sigma),
+  )
+  
+  sim_data |>
+    summarise(
+      mu_hat = mean(x),
+      sigma_hat = sd(x)
+    )
+}
+```
+
+Simulation: T-test
 ```{r}
 
 ```
-
 
