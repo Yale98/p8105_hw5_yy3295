@@ -125,6 +125,7 @@ sim_t_test = function(n = 30, mu, sd = 5) {
 }
 ```
 
+Simulation for mean = 0
 ```{r}
 output = vector("list", length = 5000)
 
@@ -135,6 +136,7 @@ for (i in 1:5000) {
 tt_results = bind_rows(output)
 ```
 
+Simulation for mean = 1, 2, 3, 4, 5, 6
 ```{r}
 sim_results_df = 
   expand_grid(
@@ -161,6 +163,9 @@ plot_q3 = sim_results_df |>
 
 plot_q3
 ```
+From the plot we can learned when the true mean increases, the power increases as well and will eventually reaches 1.00.
+Once the effect size increases, the statistical power increases accordingly.
+
 Make a plot showing the average estimate of μ^ on the y axis and the true value of μ on the x axis. 
 Make a second plot showing the average estimate of μ^ only in samples for which the null was rejected on the y axis and the true value of μ on the x axis. 
 Is the sample average of μ^ across tests for which the null is rejected approximately equal to the true value of μ? 
@@ -204,3 +209,4 @@ plot_q3_new
 ```
 The sample average of μ^ across tests for which the null is rejected is approximately equal to the true value of μ when the true mean is greater than 4.
 The sample average of μ^ across tests for which the null is rejected is not equal to the true value of μ when the true mean is less than 4.
+The reason for the above trend is because when the true mean is greater than 4, the power and effect size is very large (close to 1).
