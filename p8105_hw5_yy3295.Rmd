@@ -113,30 +113,53 @@ This figure suggests a very wide range in the rate at which homicides are solved
 First set the following design elements.
 ```{r}
 set.seed(1)
-n <- 30
-sigma <- 5
-alpha <- 0.05
-mus <- c(1, 2, 3, 4, 5, 6, 0)
-```
-
-Simulation: Mean and SD 
-```{r}
-sim_mean_sd = function(n, mu, sigma) {
-  
-  sim_data = tibble(
-    x = rnorm(n, mean = mu, sd = sigma),
-  )
-  
-  sim_data |>
-    summarise(
-      mu_hat = mean(x),
-      sigma_hat = sd(x)
-    )
-}
 ```
 
 Simulation: T-test
 ```{r}
-
+sim_t_test = function(n = 30, mu, sd = 5) {
+  x = rnorm(n, mu, sd)
+  t.test(x) |>
+  broom::tidy() |>
+    select(p_value = p.value, mu_hat = estimate)
+}
 ```
+
+```{r}
+output = vector("list", length = 5000)
+
+for (i in 1:5000) {
+  output[[i]] = sim_t_test(mu = 0)
+}
+
+tt_results = bind_rows(output)
+```
+
+```{r}
+sim_results_df = 
+  expand_grid(
+    mus = c(1, 2, 3, 4, 5, 6),
+    iter = 1:5000) |>
+  mutate(estimate_df = map(mus, ~sim_t_test(n = 30, mu = .))) |>
+  unnest(cols = c(estimate_df))
+```
+
+Make a plot showing the proportion of times the null was rejected on the y axis and the true value of μ on the x axis. 
+Describe the association between effect size and power.
+```{r}
+plot_q3 = sim_results_df |>
+  group_by(mus) |>
+  summarise(power = sum(p_value < 0.05) / 5000) |>
+  ggplot(
+    aes(x = mus,
+        y = power)) +
+  geom_line() +
+  geom_point() +
+  labs(x = "True Mean",
+       y = "Power",
+       title = "True Mean vs Power")
+
+plot_q3
+```
+
 
