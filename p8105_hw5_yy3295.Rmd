@@ -161,5 +161,46 @@ plot_q3 = sim_results_df |>
 
 plot_q3
 ```
+Make a plot showing the average estimate of μ^ on the y axis and the true value of μ on the x axis. 
+Make a second plot showing the average estimate of μ^ only in samples for which the null was rejected on the y axis and the true value of μ on the x axis. 
+Is the sample average of μ^ across tests for which the null is rejected approximately equal to the true value of μ? 
+Why or why not?
+```{r}
+estimate_mu = sim_results_df |>
+  group_by(mus) |>
+  summarise(average_estimate = mean(mu_hat))
 
+estimate_mu_2 = sim_results_df |>
+  mutate(p.value = ifelse(
+    p_value < 0.05, "was rejected", "fail to reject")) |>
+  filter(p.value == "was rejected" ) |>
+  group_by(mus) |>
+  summarise(average_estimate_1 = mean(mu_hat))
 
+plot_q3_new = estimate_mu |>
+  ggplot() +
+  geom_line(
+    aes(x = mus,
+        y = average_estimate,
+        color = "red")) +
+  geom_point(
+    aes(x = mus,
+        y = average_estimate,
+        color = "red")) +
+  geom_line(data = estimate_mu_2,
+    aes(x = mus,
+        y = average_estimate_1,
+        color = "yellow")) +
+  geom_point(data = estimate_mu_2,
+    aes(x = mus,
+        y = average_estimate_1,
+        color = "yellow")) +
+  labs(x = "True Mean",
+       y = "Average Estimate",
+       title = "True Mean vs Average Estimate")
+  
+
+plot_q3_new
+```
+The sample average of μ^ across tests for which the null is rejected is approximately equal to the true value of μ when the true mean is greater than 4.
+The sample average of μ^ across tests for which the null is rejected is not equal to the true value of μ when the true mean is less than 4.
