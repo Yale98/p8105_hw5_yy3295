@@ -103,10 +103,58 @@ This figure suggests a very wide range in the rate at which homicides are solved
 
 ## Problem 2
 
+Start with a dataframe containing all file names; the list.files function will help
+Iterate over file names and read in data for each subject using purrr::map and saving the result as a new variable in the dataframe
 ```{r}
+data_frame = tibble(
+  file_names = list.files("./data/data_q2/"))
 
+read_data = function(csv, path = "./data/data_q2/")
+  {paste(path, csv, sep = "/") |>
+   read.csv()
+    }
 ```
 
+```{r}
+study_data = data_frame |>
+  mutate(
+    nested = map(
+      data_frame$file_names, read_data
+      )) |>
+  unnest(nested) |>
+  mutate(
+    va_1 = map_chr(.x = file_names, ~ unlist(str_split(.x, "\\.")) [[1]])) |>
+  mutate(
+    va_2 = map_chr(.x = va_1, ~ unlist(str_split(.x, "_"))[[1]])
+  ) |>
+  mutate(
+    id_1 = map_chr(.x = va_1, ~ unlist(str_split(.x, "_"))[[2]])
+  ) |>
+  select(-file_names, -va_1)
+```
+
+Make a spaghetti plot showing observations on each subject over time, and comment on differences between groups.
+```{r}
+final_data = study_data |>
+  pivot_longer(week_1:week_8,
+               names_to = "week",
+               values_to = "obs",
+               names_prefix = "week_") |>
+  mutate(
+    week = as.integer(week)
+  )
+
+spaghetti_plot = final_data |>
+  ggplot(aes(x = week,
+             y = obs,
+             color = id_1)) +
+  geom_line() +
+  facet_grid(~va_2)
+
+spaghetti_plot
+```
+
+Tidy the result; manipulate file names to include control arm and subject ID, make sure weekly observations are “tidy”, and do any other tidying that’s necessary
 
 ## Problem 3
 
